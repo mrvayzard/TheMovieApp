@@ -17,11 +17,13 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            buildConfigField("String", "MAIN_API_URL", "\"${ProdApiUrl}\"")
+            buildConfigField("String", "API_URL", "\"${ProdApiUrl}\"")
+            buildConfigField("String", "API_KEY", "\"${ApiKey}\"")
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            buildConfigField("String", "MAIN_API_URL", "\"${DevApiUrl}\"")
+            buildConfigField("String", "API_URL", "\"${DevApiUrl}\"")
+            buildConfigField("String", "API_KEY", "\"${ApiKey}\"")
         }
     }
 

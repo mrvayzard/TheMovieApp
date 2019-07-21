@@ -4,6 +4,7 @@ import android.location.Geocoder
 import com.movieapp.BuildConfig
 import com.movieapp.data.remote.ApiService
 import com.movieapp.data.remote.interceptor.ConnectivityInterceptor
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
@@ -21,6 +22,16 @@ object NetworkModule {
         single { ConnectivityInterceptor(androidContext()) }
     }
 
+    private fun createAppAuthInterceptor() = Interceptor { chain ->
+        val url = chain.request().url()
+            .newBuilder()
+            .addQueryParameter("api_key", BuildConfig.API_KEY)
+            .build()
+        val request = chain.request().newBuilder().url(url).build()
+        chain.proceed(request)
+    }
+
+
     private fun createOkHttpClient(
         connectivityInterceptor: ConnectivityInterceptor
     ): OkHttpClient {
@@ -30,6 +41,7 @@ object NetworkModule {
 
         val builder = OkHttpClient.Builder()
             .addInterceptor(connectivityInterceptor)
+            .addInterceptor(createAppAuthInterceptor())
             .readTimeout(20, TimeUnit.SECONDS)
             .connectTimeout(20, TimeUnit.SECONDS)
 
@@ -42,7 +54,7 @@ object NetworkModule {
 
     private fun createRetrofitInstance(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.MAIN_API_URL)
+            .baseUrl(BuildConfig.API_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
