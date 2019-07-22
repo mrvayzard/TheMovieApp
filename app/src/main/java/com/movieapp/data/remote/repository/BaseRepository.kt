@@ -1,5 +1,7 @@
 package com.movieapp.data.remote.repository
 
+import com.movieapp.base.exception.ApiKeyException
+import com.movieapp.base.exception.NotFoundException
 import com.movieapp.base.exception.ServerException
 import com.movieapp.base.exception.UnknownException
 import com.movieapp.data.Result
@@ -15,6 +17,8 @@ open class BaseRepository {
             else {
                 when (response.code()) {
                     500 -> ResultError(exception = ServerException())
+                    401 -> ResultError(exception = ApiKeyException())
+                    404 -> ResultError(exception = NotFoundException())
                     else -> ResultError(exception = UnknownException())
                 }
             }
